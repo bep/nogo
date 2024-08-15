@@ -1,13 +1,13 @@
-module github.com/seedifferently/nogo
+module github.com/bep/nogo
 
-go 1.17
+go 1.22
 
 require (
 	github.com/boltdb/bolt v1.3.1
 	github.com/go-chi/chi v1.5.5
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/render v1.0.3
-	github.com/miekg/dns v1.1.62
+	github.com/miekg/dns v1.0.15
 )
 
 require (

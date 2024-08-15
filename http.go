@@ -27,26 +27,26 @@ func basicAuth(password string) func(next http.Handler) http.Handler {
 
 			s := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
 			if len(s) != 2 {
-				http.Error(w, http.StatusText(401), 401)
+				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 				return
 			}
 
 			b, err := base64.StdEncoding.DecodeString(s[1])
 			if err != nil {
 				log.Printf("base64.StdEncoding.DecodeString() Error: %s\n", err)
-				http.Error(w, http.StatusText(401), 401)
+				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 				return
 			}
 
 			pair := strings.SplitN(string(b), ":", 2)
 			if len(pair) != 2 {
 				log.Printf("strings.SplitN() Error: %s\n", err)
-				http.Error(w, http.StatusText(401), 401)
+				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 				return
 			}
 
 			if pair[0] != "admin" || pair[1] != password {
-				http.Error(w, http.StatusText(401), 401)
+				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 				return
 			}
 
@@ -65,7 +65,7 @@ func rootIndexHandler(w http.ResponseWriter, r *http.Request) {
 		if len(q) >= 3 {
 			data = db.find(q)
 		} else {
-			http.Error(w, http.StatusText(422), 422)
+			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 			return
 		}
 	} else if p == "1" { // GET /?p=1
@@ -98,7 +98,7 @@ func recordsCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	key := r.FormValue("key")
 	if !isValidDomainName(key) {
-		http.Error(w, http.StatusText(422), 422)
+		http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -115,7 +115,7 @@ func recordsCreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Redirect to key view
-	http.Redirect(w, r, strings.Join([]string{"/records/", key}, ""), 302)
+	http.Redirect(w, r, strings.Join([]string{"/records/", key}, ""), http.StatusFound)
 }
 
 // GET /records/:key
@@ -155,8 +155,8 @@ func recordsReadHandler(w http.ResponseWriter, r *http.Request) {
 
 // GET /export/hosts.txt
 func exportHostsHandler(w http.ResponseWriter, r *http.Request) {
-	var bol = []byte("0.0.0.0 ") // Beginning of each line
-	var eol = []byte("\n")       // End of each line
+	bol := []byte("0.0.0.0 ") // Beginning of each line
+	eol := []byte("\n")       // End of each line
 
 	w.Header().Set("Content-Disposition", "attachment; filename=hosts.txt")
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
@@ -206,7 +206,7 @@ func apiRecordsIndexHandler(w http.ResponseWriter, r *http.Request) {
 	} else if p == "1" { // GET /api/records/?p=1
 		data = db.getPaused()
 	} else {
-		http.Error(w, http.StatusText(422), 422)
+		http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -236,7 +236,7 @@ func apiRecordsUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	key := chi.URLParam(r, "key")
 	if !isValidDomainName(key) {
-		http.Error(w, http.StatusText(422), 422)
+		http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -296,7 +296,7 @@ func apiSettingsUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 // GET /css/nogo.css
 func cssHandler(w http.ResponseWriter, r *http.Request) {
-	var data = []byte(nogoCSS)
+	data := []byte(nogoCSS)
 
 	w.Header().Set("Cache-Control", "public, max-age=31536000")
 	w.Header().Set("Content-Length", strconv.Itoa(len(data)))

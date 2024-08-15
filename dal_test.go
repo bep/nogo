@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -151,7 +150,7 @@ func TestDB_getPaused(t *testing.T) {
 func TestDB_importBlacklist(t *testing.T) {
 	db.Reset()
 
-	f, err := ioutil.TempFile("", "nogo-import-")
+	f, err := os.CreateTemp("", "nogo-import-")
 	if err != nil {
 		t.Errorf("failed to create TempFile: %+v", err)
 	}

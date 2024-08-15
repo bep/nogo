@@ -126,7 +126,7 @@ func (db *DB) delete(key string) error {
 
 func (db *DB) find(search string) map[string]*Record {
 	var err error
-	var recs = make(map[string]*Record)
+	recs := make(map[string]*Record)
 
 	if search != "" {
 		search = strings.ToLower(search)
@@ -172,7 +172,7 @@ func (db *DB) find(search string) map[string]*Record {
 
 func (db *DB) getPaused() map[string]*Record {
 	var err error
-	var recs = make(map[string]*Record)
+	recs := make(map[string]*Record)
 
 	db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(blacklistKey)
@@ -180,7 +180,7 @@ func (db *DB) getPaused() map[string]*Record {
 		b.ForEach(func(k, v []byte) error {
 			var r *Record
 
-			if v == nil || len(v) == 0 {
+			if len(v) == 0 {
 				// Skip "sub-buckets" and empty values
 				return nil
 			}
