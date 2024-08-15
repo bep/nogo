@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/boltdb/bolt"
+	"go.etcd.io/bbolt"
 )
 
 func TestMain(m *testing.M) {
@@ -47,7 +47,7 @@ func tempfilePath(prefix string) string {
 }
 
 func MustOpenDB() *DB {
-	bdb, err := bolt.Open(tempfilePath("nogo-db-"), 0666, nil)
+	bdb, err := bbolt.Open(tempfilePath("nogo-db-"), 0o666, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -56,13 +56,13 @@ func MustOpenDB() *DB {
 }
 
 func (db *DB) Reset() {
-	db.Update(func(tx *bolt.Tx) error {
+	db.Update(func(tx *bbolt.Tx) error {
 		// Delete bucket
 		tx.DeleteBucket(blacklistKey)
 		return nil
 	})
 
-	if err := db.Update(func(tx *bolt.Tx) error {
+	if err := db.Update(func(tx *bbolt.Tx) error {
 		// Create bucket
 		_, err := tx.CreateBucket(blacklistKey)
 		return err
@@ -83,6 +83,5 @@ func testEqual(t *testing.T, msg string, args ...interface{}) {
 	t.Helper()
 	if !reflect.DeepEqual(args[len(args)-2], args[len(args)-1]) {
 		t.Fatalf(msg, args...)
-
 	}
 }

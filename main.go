@@ -14,15 +14,15 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/boltdb/bolt"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/miekg/dns"
+	"go.etcd.io/bbolt"
 )
 
 // DB represents the Bolt DB instance
 type DB struct {
-	*bolt.DB
+	*bbolt.DB
 }
 
 var (
@@ -68,15 +68,15 @@ func main() {
 	}
 
 	// Initialize the database
-	bdb, err := bolt.Open(*dbPath, 0o600, &bolt.Options{Timeout: 2 * time.Second})
+	bdb, err := bbolt.Open(*dbPath, 0o600, &bbolt.Options{Timeout: 2 * time.Second})
 	if err != nil {
-		log.Fatalf("bolt.Open() Error: %s\n", err)
+		log.Fatalf("bbolt.Open() Error: %s\n", err)
 	}
 	db = &DB{bdb}
 	defer db.Close()
 
 	// Ensure blacklist bucket exists
-	if err = db.Update(func(tx *bolt.Tx) error {
+	if err = db.Update(func(tx *bbolt.Tx) error {
 		// Get/create bucket
 		_, err := tx.CreateBucketIfNotExists(blacklistKey)
 		return err

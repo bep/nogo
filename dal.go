@@ -12,7 +12,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/boltdb/bolt"
+	"go.etcd.io/bbolt"
 )
 
 var errRecordNotFound = errors.New("record not found")
@@ -58,9 +58,9 @@ func (s *APISetting) Bind(req *http.Request) error {
 }
 
 func (db *DB) keyCount() (int, error) {
-	var stats bolt.BucketStats
+	var stats bbolt.BucketStats
 
-	if err := db.View(func(tx *bolt.Tx) error {
+	if err := db.View(func(tx *bbolt.Tx) error {
 		// Get bucket stats
 		stats = tx.Bucket(blacklistKey).Stats()
 
@@ -75,7 +75,7 @@ func (db *DB) keyCount() (int, error) {
 func (db *DB) get(key string) (*Record, error) {
 	var r *Record
 
-	err := db.View(func(tx *bolt.Tx) error {
+	err := db.View(func(tx *bbolt.Tx) error {
 		var err error
 
 		v := tx.Bucket(blacklistKey).Get([]byte(strings.ToLower(key)))
@@ -98,7 +98,7 @@ func (db *DB) get(key string) (*Record, error) {
 }
 
 func (db *DB) put(key string, r *Record) error {
-	err := db.Update(func(tx *bolt.Tx) error {
+	err := db.Update(func(tx *bbolt.Tx) error {
 		var err error
 		var v []byte
 
@@ -117,7 +117,7 @@ func (db *DB) put(key string, r *Record) error {
 }
 
 func (db *DB) delete(key string) error {
-	err := db.Update(func(tx *bolt.Tx) error {
+	err := db.Update(func(tx *bbolt.Tx) error {
 		return tx.Bucket(blacklistKey).Delete([]byte(strings.ToLower(key)))
 	})
 
@@ -131,7 +131,7 @@ func (db *DB) find(search string) map[string]*Record {
 	if search != "" {
 		search = strings.ToLower(search)
 
-		db.View(func(tx *bolt.Tx) error {
+		db.View(func(tx *bbolt.Tx) error {
 			b := tx.Bucket(blacklistKey)
 
 			b.ForEach(func(k, v []byte) error {
@@ -174,7 +174,7 @@ func (db *DB) getPaused() map[string]*Record {
 	var err error
 	recs := make(map[string]*Record)
 
-	db.View(func(tx *bolt.Tx) error {
+	db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket(blacklistKey)
 
 		b.ForEach(func(k, v []byte) error {
