@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/boltdb/bolt"
+	"go.etcd.io/bbolt"
 )
 
 func TestRecord_isAllowed(t *testing.T) {
@@ -57,7 +57,7 @@ func TestDB_put_get(t *testing.T) {
 	if err := db.put("Nil.test", r); err != nil {
 		t.Errorf("failed to put: %+v", err)
 	}
-	db.View(func(tx *bolt.Tx) error {
+	db.View(func(tx *bbolt.Tx) error {
 		v := tx.Bucket(blacklistKey).Get([]byte("nil.test"))
 		testEqual(t, "put() = %+v, want %+v", string(v), "")
 		return nil
@@ -68,7 +68,7 @@ func TestDB_put_get(t *testing.T) {
 	if err := db.put("empty.test", &Record{}); err != nil {
 		t.Errorf("failed to put: %+v", err)
 	}
-	db.View(func(tx *bolt.Tx) error {
+	db.View(func(tx *bbolt.Tx) error {
 		v := tx.Bucket(blacklistKey).Get([]byte("empty.test"))
 		testEqual(t, "put() = %+v, want %+v", string(v), "{\"paused\":false}")
 		return nil
@@ -79,7 +79,7 @@ func TestDB_put_get(t *testing.T) {
 	if err := db.put("paused.test", &Record{Paused: true}); err != nil {
 		t.Errorf("failed to put: %+v", err)
 	}
-	db.View(func(tx *bolt.Tx) error {
+	db.View(func(tx *bbolt.Tx) error {
 		v := tx.Bucket(blacklistKey).Get([]byte("paused.test"))
 		testEqual(t, "put() = %+v, want %+v", string(v), "{\"paused\":true}")
 		return nil

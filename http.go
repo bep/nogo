@@ -10,10 +10,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/boltdb/bolt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/miekg/dns"
+	"go.etcd.io/bbolt"
 )
 
 // H represents a map[string]interface{}
@@ -169,7 +169,7 @@ func exportHostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Export each host from the db
-	err := db.View(func(tx *bolt.Tx) error {
+	err := db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket(blacklistKey)
 
 		return b.ForEach(func(k, v []byte) error {
