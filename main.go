@@ -68,7 +68,7 @@ func main() {
 	}
 
 	// Initialize the database
-	bdb, err := bolt.Open(*dbPath, 0600, &bolt.Options{Timeout: 2 * time.Second})
+	bdb, err := bolt.Open(*dbPath, 0o600, &bolt.Options{Timeout: 2 * time.Second})
 	if err != nil {
 		log.Fatalf("bolt.Open() Error: %s\n", err)
 	}
@@ -138,7 +138,7 @@ func main() {
 	}
 	log.Printf("DNS proxy listening at: %s (%s)\n", *dnsAddr, *dnsNet)
 
-	if *webOff != true {
+	if !*webOff {
 		httpServer = &http.Server{Addr: *webAddr, Handler: r}
 
 		wg.Add(1)
@@ -152,12 +152,12 @@ func main() {
 	}
 
 	// Attempt to gracefully shut down when signaled
-	sig := make(chan os.Signal)
+	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 	s := <-sig
 	fmt.Printf("Signal (%s) received, shutting down... ", s)
 
-	if *webOff != true {
+	if !*webOff {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		httpServer.Shutdown(ctx)
