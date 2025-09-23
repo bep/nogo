@@ -33,3 +33,10 @@ The below is the content of my `/Library/LaunchDaemons/is.bep.dns.plist` file. I
 </plist>
 ```
 
+
+To refrehs the hosts file:
+
+1. `sudo launchctl unload  /Library/LaunchDaemons/is.bep.dns.plist`
+2. `wget https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews/hosts`
+3. `nogo -import hosts` + `CTRL-C`
+4. `sudo launchctl load -w  /Library/LaunchDaemons/is.bep.dns.plist`
