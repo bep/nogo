@@ -30,7 +30,7 @@ func tempfilePath(prefix string) string {
 	dir := os.TempDir()
 	conflict := true
 
-	for i := 0; i < 10000; i++ {
+	for range 10000 {
 		name = filepath.Join(dir, prefix+strconv.Itoa(randInt()))
 
 		if _, err := os.Stat(name); os.IsNotExist(err) {
@@ -79,7 +79,7 @@ func (db *DB) MustClose() {
 	}
 }
 
-func testEqual(t *testing.T, msg string, args ...interface{}) {
+func testEqual(t *testing.T, msg string, args ...any) {
 	t.Helper()
 	if !reflect.DeepEqual(args[len(args)-2], args[len(args)-1]) {
 		t.Fatalf(msg, args...)

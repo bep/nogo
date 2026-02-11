@@ -17,7 +17,7 @@ import (
 )
 
 // H represents a map[string]interface{}
-type H map[string]interface{}
+type H map[string]any
 
 // HTTP basic auth middleware
 func basicAuth(password string) func(next http.Handler) http.Handler {
