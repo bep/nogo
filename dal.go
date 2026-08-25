@@ -236,6 +236,11 @@ func (db *DB) importBlacklist(fname string) error {
 			continue
 		}
 
+		// Keep existing records as they are; a paused record stays paused.
+		if _, err := db.get(r); err == nil {
+			continue
+		}
+
 		db.put(r, nil)
 	}
 

@@ -1,0 +1,42 @@
+[Unit]
+Description=nogo DNS blacklist/proxy
+Documentation=https://github.com/bep/nogo
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=nogo
+Group=nogo
+StateDirectory=nogo
+ExecStart=/usr/local/bin/nogo \
+    -db /var/lib/nogo/nogo.db \
+    -dns-addr 127.0.0.1:53 \
+    -dns-net udp+tcp \
+    -dns-proxyto 1.1.1.1:53,8.8.8.8:53,8.8.4.4:53 \
+    -web-addr 127.0.0.1:8123
+Restart=always
+RestartSec=1
+LimitNOFILE=32768
+
+; Port 53 is privileged, everything else is not.
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+NoNewPrivileges=true
+
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=true
+RestrictRealtime=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+
+[Install]
+WantedBy=multi-user.target

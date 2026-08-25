@@ -40,7 +40,7 @@ var (
 	dnsAddr    = flag.String("dns-addr", ":53", "Specify an address for the DNS proxy server to listen on.")
 	dnsNet     = flag.String("dns-net", "udp", "Specify the listener protocol(s) for the DNS proxy server to use (\"udp\", \"tcp\", or \"udp+tcp\").")
 	dnsProxyTo = flag.String("dns-proxyto", "8.8.8.8:53,8.8.4.4:53", "Specify one or more (comma separated) upstream DNS server addresses to proxy allowed queries to.")
-	blacklist  = flag.String("import", "", "Specify a file path to import records to block (traditional hosts file format, or simply one domain per line).")
+	blacklist  = flag.String("import", "", "Specify a file path to import records to block (traditional hosts file format, or simply one domain per line). Imports and exits.")
 	webAddr    = flag.String("web-addr", ":8080", "Specify an address for the control panel web server to listen on.")
 	webOff     = flag.Bool("web-off", false, "Instruct nogo not to serve the web control panel/API.")
 	webPasswd  = flag.String("web-password", "", "Instruct the web control panel/API to require basic auth, using the specified password and a username of \"admin\".")
@@ -98,6 +98,14 @@ func main() {
 		}
 
 		db.NoSync = false
+
+		n, err := db.keyCount()
+		if err != nil {
+			log.Fatalf("db.keyCount() Error: %s\n", err)
+		}
+		fmt.Printf("Imported %s, blacklist now holds %d records.\n", *blacklist, n)
+
+		return
 	}
 
 	// Initialize the HTTP router

@@ -169,6 +169,13 @@ func TestDB_importBlacklist(t *testing.T) {
 
 	r, _ := db.get("test.test")
 	testEqual(t, "get('test.test') = %+v, want %+v", *r, Record{})
+
+	// A re-import must not clobber records edited via the control panel.
+	db.put("test.test", &Record{Paused: true})
+	db.importBlacklist(f.Name())
+
+	r, _ = db.get("test.test")
+	testEqual(t, "get('test.test') = %+v, want %+v", *r, Record{Paused: true})
 }
 
 func Test_parseRecord(t *testing.T) {
