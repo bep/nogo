@@ -4,7 +4,7 @@
 #   update-hosts.sh [url-or-path]
 set -euo pipefail
 
-SRC="${1:-https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews/hosts}"
+SRC="${1:-https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts}"
 DB=/var/lib/nogo/nogo.db
 
 tmp=$(mktemp -d)
