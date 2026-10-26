@@ -38,7 +38,7 @@ func dnsHandler(w dns.ResponseWriter, r *dns.Msg) {
 	}
 
 	// Proxy allowed questions upstream
-	for _, addr := range strings.Split(*dnsProxyTo, ",") {
+	for addr := range strings.SplitSeq(*dnsProxyTo, ",") {
 		in, _, err := dnsClient.Exchange(r, addr)
 		if err != nil {
 			log.Printf("Exchange(%s) Error: %s\n", addr, err)
