@@ -133,7 +133,7 @@ func main() {
 	// Initialize/start the servers
 	log.Println("Booting up nogo...")
 
-	for _, n := range strings.Split(*dnsNet, "+") {
+	for n := range strings.SplitSeq(*dnsNet, "+") {
 		dnsServers = append(dnsServers, &dns.Server{Addr: *dnsAddr, Net: n, Handler: dns.HandlerFunc(dnsHandler)})
 
 		wg.Add(1)
@@ -149,13 +149,11 @@ func main() {
 	if !*webOff {
 		httpServer = &http.Server{Addr: *webAddr, Handler: r}
 
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
 				log.Fatal(err)
 			}
-		}()
+		})
 		log.Printf("Web control panel/API listening at: %s\n", *webAddr)
 	}
 
