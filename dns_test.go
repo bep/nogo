@@ -100,7 +100,7 @@ func Test_dnsHandler(t *testing.T) {
 	testEqual(t, "Allowed Rcode = %+v, want %+v", r.Rcode, dns.RcodeSuccess)
 	testEqual(t, "Allowed Questions = %+v, want %+v", r.Question, m.Question)
 
-	// Multiple questions
+	// Multiple questions are rejected by miekg/dns' DefaultMsgAcceptFunc before reaching dnsHandler
 	m = new(dns.Msg)
 	m.SetQuestion("test.allowed.", dns.TypeA)
 	m.Question = append(m.Question, dns.Question{Name: "test.disallowed.", Qtype: dns.TypeA, Qclass: dns.ClassINET})
@@ -108,9 +108,7 @@ func Test_dnsHandler(t *testing.T) {
 	if err != nil {
 		t.Errorf("failed to exchange: %+v", err)
 	}
-	testEqual(t, "Multiple Rcode = %+v, want %+v", r.Rcode, dns.RcodeSuccess)
-	testEqual(t, "Multiple Response len() = %+v, want %+v", len(r.Question), 1)
-	testEqual(t, "Multiple Response Question = %+v, want %+v", r.Question[0].Name, "test.allowed.")
+	testEqual(t, "Multiple Rcode = %+v, want %+v", r.Rcode, dns.RcodeFormatError)
 }
 
 func Test_filterQuestions(t *testing.T) {
