@@ -107,8 +107,8 @@ sudo nogo-update-hosts <url-or-file>         # some other list
 On macOS:
 
 ```
-sudo launchctl unload /Library/LaunchDaemons/is.bep.dns.plist
 wget https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews/hosts
+sudo launchctl unload /Library/LaunchDaemons/is.bep.dns.plist
 nogo -db ~/config/nogo/nogo.db -import hosts
 sudo launchctl load -w /Library/LaunchDaemons/is.bep.dns.plist
 ```
